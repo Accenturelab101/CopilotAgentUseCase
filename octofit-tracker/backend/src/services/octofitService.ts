@@ -60,6 +60,9 @@ export async function createTeam(input: unknown) {
   if (!data.name) {
     throw Object.assign(new Error('Team name is required'), { status: 400 });
   }
+  if (!data.mascot) {
+    throw Object.assign(new Error('Team mascot is required'), { status: 400 });
+  }
   
   const team = await Team.create({
     name: data.name,
