@@ -94,8 +94,43 @@ export async function getLeaderboard() {
   return sorted;
 }
 
-export async function suggestWorkouts(_userEmail: string) {
-  return Workout.find().limit(1).lean();
+export async function suggestWorkouts(userEmail: string) {
+  const decodedEmail = decodeURIComponent(userEmail);
+  
+  // Find user by email
+  const user = await User.findOne({ email: decodedEmail }).lean();
+  if (!user) {
+    throw Object.assign(new Error('User not found'), { status: 404 });
+  }
+  
+  // Get user's recent activities to analyze patterns
+  const activities = await Activity.find({ user: user._id }).sort({ occurredAt: -1 }).limit(10).lean();
+  
+  // Determine suggestion focus based on goal or recent activity
+  let suggestFocus = user.fitnessGoal;
+  if (activities.length > 0) {
+    // If user has recent activities of a specific type, prefer that
+    const activityTypes = activities.map(a => a.type);
+    // For simplicity, use the most recent activity type or fall back to fitness goal
+    if (activityTypes[0] === 'run' || activityTypes[0] === 'cycling') {
+      suggestFocus = 'endurance';
+    } else if (activityTypes[0] === 'strength') {
+      suggestFocus = 'strength';
+    }
+  }
+  
+  // Find workouts matching the focus
+  const workouts = await Workout.find({ focus: suggestFocus }).lean();
+  
+  // Add reason to each suggestion
+  const suggestions = workouts.map(workout => ({
+    ...workout,
+    reason: activities.length > 0 
+      ? `Based on your recent ${activities[0].type} activity and ${user.fitnessGoal} goal`
+      : `Based on your ${user.fitnessGoal} fitness goal`,
+  }));
+  
+  return suggestions;
 }
 
 export { User };
