@@ -71,7 +71,27 @@ export async function createTeam(input: unknown) {
 }
 
 export async function getLeaderboard() {
-  return [];
+  const activities = await Activity.find().populate('team').lean();
+  
+  // Sum points by team
+  const teamPoints = new Map<string, { name: string; points: number }>();
+  for (const activity of activities) {
+    const teamId = String((activity.team as any)._id);
+    const teamName = (activity.team as any).name;
+    const current = teamPoints.get(teamId) ?? { name: teamName, points: 0 };
+    teamPoints.set(teamId, { name: teamName, points: current.points + activity.points });
+  }
+  
+  // Convert to array and sort by points (descending)
+  const sorted = Array.from(teamPoints.values())
+    .sort((a, b) => b.points - a.points)
+    .map((team, index) => ({
+      teamName: team.name,
+      totalPoints: team.points,
+      rank: index + 1,
+    }));
+  
+  return sorted;
 }
 
 export async function suggestWorkouts(_userEmail: string) {
