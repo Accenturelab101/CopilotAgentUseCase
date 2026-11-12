@@ -53,8 +53,21 @@ export async function listTeams() {
   return Team.find().lean();
 }
 
-export async function createTeam(_input: unknown) {
-  throw Object.assign(new Error('Team validation is not implemented yet'), { status: 501 });
+export async function createTeam(input: unknown) {
+  const data = input as Record<string, unknown>;
+  
+  // Validate required fields
+  if (!data.name) {
+    throw Object.assign(new Error('Team name is required'), { status: 400 });
+  }
+  
+  const team = await Team.create({
+    name: data.name,
+    mascot: data.mascot,
+    members: Array.isArray(data.members) ? data.members : [],
+  });
+  
+  return team.toObject();
 }
 
 export async function getLeaderboard() {
