@@ -25,10 +25,10 @@ describe('OctoFit presentation contract', () => {
     vi.restoreAllMocks();
     vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.includes('/api/activities')) return new Response(JSON.stringify({ activities: [{ type: 'run', minutes: 30, points: 30 }] }), { status: 200 });
-      if (url.includes('/api/teams')) return new Response(JSON.stringify({ teams: [{ name: 'Octocats', members: ['Mona'] }] }), { status: 200 });
-      if (url.includes('/api/leaderboard')) return new Response(JSON.stringify({ leaderboard: [{ teamName: 'Octocats', totalPoints: 90, rank: 1 }] }), { status: 200 });
-      if (/\/api\/workouts\/suggestions\/mona(%40|@)example\.com$/.test(url)) return new Response(JSON.stringify({ suggestions: [{ title: 'Intervals', reason: 'Build endurance' }] }), { status: 200 });
+      if (url.includes('/api/activities')) return new Response(JSON.stringify({ activities: [{ _id: '507f1f77bcf86cd799439011', type: 'run', minutes: 30, points: 30 }] }), { status: 200 });
+      if (url.includes('/api/teams')) return new Response(JSON.stringify({ teams: [{ _id: '507f1f77bcf86cd799439012', name: 'Octocats', members: ['Mona'] }] }), { status: 200 });
+      if (url.includes('/api/leaderboard')) return new Response(JSON.stringify({ leaderboard: [{ _id: '507f1f77bcf86cd799439013', teamName: 'Octocats', totalPoints: 90, rank: 1 }] }), { status: 200 });
+      if (/\/api\/workouts\/suggestions\/mona(%40|@)example\.com$/.test(url)) return new Response(JSON.stringify({ suggestions: [{ _id: '507f1f77bcf86cd799439014', title: 'Intervals', reason: 'Build endurance' }] }), { status: 200 });
       return new Response(JSON.stringify({ message: 'Not found' }), { status: 404 });
     }));
   });

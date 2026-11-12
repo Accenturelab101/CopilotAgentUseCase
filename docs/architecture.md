@@ -30,20 +30,20 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 
 Record your plan here before editing code.
 
-- Presentation tier decision:
-- Logic tier decision:
-- Data tier decision:
-- Activity tracking approach:
-- Team management approach:
-- Leaderboard approach:
-- Workout suggestions approach:
+- Presentation tier decision: Use React 19 components with React Router, Bootstrap styling, and `src/api/client.ts` for API calls. Show loading, empty, success, and error states.
+- Logic tier decision: Use Express with TypeScript routes under `/api/`, explicit service functions for business logic, and deliberate 4xx responses (never 500 from validation/cast errors).
+- Data tier decision: Use Mongoose schemas with built-in validation, store stable demo records with upserts, and keep model constraints in schemas separate from route handlers.
+- Activity tracking approach: POST validates userId/teamId existence (reject 4xx if missing), auto-computes points and occurredAt timestamp, stores valid records.
+- Team management approach: POST validates name presence (reject 400 if missing), GET returns teams with populated members array.
+- Leaderboard approach: Query all activities, sum points by team, rank highest-to-lowest, return with teamName, totalPoints, rank.
+- Workout suggestions approach: Find user by email, analyze their recent activity types/goals, recommend workouts matching their pattern, include reason field explaining the recommendation.
 
 ## Test plan
 
 Record the commands you run and what each failure means.
 
-- Data-tier command: `npm run test:data --prefix octofit-tracker/backend`
-- API command: `npm run test:api --prefix octofit-tracker/backend`
-- Frontend command: `npm test --prefix octofit-tracker/frontend`
-- Backend build command: `npm run build --prefix octofit-tracker/backend`
-- Frontend build command: `npm run build --prefix octofit-tracker/frontend`
+- Data-tier command: `npm run test:data --prefix octofit-tracker/backend` — Verifies User, Team, Activity, Workout schemas have required field validation and reject invalid data.
+- API command: `npm run test:api --prefix octofit-tracker/backend` — Verifies endpoints return correct status codes (400 for validation, 201 for create, 200 for read), compute fields correctly, and implement leaderboard/suggestion logic.
+- Frontend command: `npm test --prefix octofit-tracker/frontend` — Verifies components fetch from API, render activity data, show loading/empty/error states, and display leaderboard and suggestions.
+- Backend build command: `npm run build --prefix octofit-tracker/backend` — Ensures TypeScript compiles without errors.
+- Frontend build command: `npm run build --prefix octofit-tracker/frontend` — Ensures React/Vite build succeeds without errors.
